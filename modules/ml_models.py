@@ -25,10 +25,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+import joblib
 from xgboost import XGBRegressor, XGBClassifier
 
 CHAR_CSV = os.path.join(os.path.dirname(__file__), "..", "data", "baseline_char.csv")
 WENGINE_CSV = os.path.join(os.path.dirname(__file__), "..", "data", "baseline_wengine.csv")
+CACHE_FILE = os.path.join(os.path.dirname(__file__), "..", "data", "models_cache.pkl")
 
 def categorize_pity(pity, is_wengine=False):
     if is_wengine:
@@ -207,7 +209,20 @@ class ModelManager:
 
         return fitted_regs_promo, fitted_regs_s, fitted_clfs, all_reg_metrics, all_clf_metrics
 
-    def train_and_evaluate_all(self):
+    def train_and_evaluate_all(self, force_retrain=False):
+        if not force_retrain and os.path.exists(CACHE_FILE):
+            try:
+                cached = joblib.load(CACHE_FILE)
+                self.char_models = cached["char_models"]
+                self.wengine_models = cached["wengine_models"]
+                self.char_metrics = cached["char_metrics"]
+                self.wengine_metrics = cached["wengine_metrics"]
+                self.feature_importance = cached["feature_importance"]
+                self.is_trained = True
+                return self.char_metrics["reg"], self.char_metrics["clf"]
+            except Exception:
+                pass
+
         # Latih Karakter
         c_rp, c_rs, c_clfs, c_reg_m, c_clf_m = self._train_suite(CHAR_CSV, is_wengine=False)
         self.char_models["reg_promo"] = c_rp
@@ -233,6 +248,18 @@ class ModelManager:
             self.feature_names, 
             np.round(self.char_models["reg_promo"]["XGBoost"].feature_importances_, 4)
         ))
+
+        # Simpan ke Cache File untuk pemuatan instan (<0.3s) di Cloud
+        try:
+            joblib.dump({
+                "char_models": self.char_models,
+                "wengine_models": self.wengine_models,
+                "char_metrics": self.char_metrics,
+                "wengine_metrics": self.wengine_metrics,
+                "feature_importance": self.feature_importance
+            }, CACHE_FILE)
+        except Exception:
+            pass
 
         self.is_trained = True
         return self.char_metrics["reg"], self.char_metrics["clf"]
