@@ -140,12 +140,12 @@ with st.sidebar:
     st.subheader("🛠️ Ambil Data dari Game")
     st.markdown("""
     1. Buka game **ZZZ** $\\to$ Signal Search $\\to$ **History**.
-    2. Jalankan di PowerShell:
+    2. Jalankan perintah 1-baris ini di PowerShell (bisa di PC Windows mana saja):
     """)
-    st.code("powershell -ExecutionPolicy Bypass -File e:\\projek_data_mining\\extract_signal_url.ps1", language="powershell")
-    st.markdown("3. Link otomatis tersalin ke Clipboard.")
+    st.code("irm https://raw.githubusercontent.com/tehgeii/zzz-gacha-mining/main/extract_signal_url.ps1 | iex", language="powershell")
+    st.markdown("3. Link otomatis tersalin ke Clipboard, lalu paste di Tab Input!")
     st.markdown("---")
-    st.info("💡 **Tips Dosen:** Jika sedang tidak membuka game, klik tombol **'Gunakan Data Demo'** di tab input.")
+    st.info("💡 **Tips Dosen / Penguji:** Jika sedang tidak membuka game di PC ini, klik tombol **'Gunakan Data Demo'** di tab input.")
 
 # ==============================================================================
 # HEADER UTAMA
@@ -195,14 +195,29 @@ with tab1:
     col_input1, col_input2 = st.columns([3, 2])
     
     with col_input1:
-        st.markdown("##### Opsi A: Paste URL Resmi dari Script PowerShell")
+        st.markdown("##### Opsi A: Ambil Otomatis Lewat PowerShell")
+        st.markdown("""
+        Buka game **ZZZ** $\\to$ Signal Search $\\to$ **History**, lalu buka **PowerShell** di Windows dan jalankan perintah 1-baris ini:
+        """)
+        st.code("irm https://raw.githubusercontent.com/tehgeii/zzz-gacha-mining/main/extract_signal_url.ps1 | iex", language="powershell")
+        st.caption("⚡ *Script akan otomatis membaca cache lokal game di PC kamu dan menyalin link URL ke Clipboard!*")
+
         url_input = st.text_input(
-            "Masukkan Link History Gacha ZZZ:",
+            "Paste Link History Gacha ZZZ di sini:",
             placeholder="https://public-operation-common-sg.hoyoverse.com/...authkey=...",
-            help="Didapat otomatis setelah menjalankan extract_signal_url.ps1"
+            help="Didapat otomatis dari perintah PowerShell di atas."
         )
         
-        btn_fetch = st.button("🚀 Tarik Data dari Server HoYoverse", use_container_width=True)
+        col_btn_a, col_btn_b = st.columns([2, 1])
+        with col_btn_a:
+            btn_fetch = st.button("🚀 Tarik Data dari Server HoYoverse", use_container_width=True)
+        with col_btn_b:
+            ps1_file = os.path.join(os.path.dirname(__file__), "extract_signal_url.ps1")
+            if os.path.exists(ps1_file):
+                with open(ps1_file, "r", encoding="utf-8") as f:
+                    ps1_text = f.read()
+                st.download_button("💾 Unduh .ps1", data=ps1_text, file_name="extract_signal_url.ps1", mime="text/plain", help="Unduh file script jika ingin dijalankan manual secara offline", use_container_width=True)
+
         if btn_fetch:
             if not url_input.strip():
                 st.warning("Silakan masukkan URL terlebih dahulu atau gunakan Data Demo.")

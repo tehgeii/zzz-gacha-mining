@@ -37,10 +37,14 @@ Aplikasi web berbasis Data Mining dan Machine Learning untuk analisis riwayat ta
 
 ## ⚡ Fitur Unggulan
 
-1. **Auto-Extraction Pipeline (PowerShell):**
-   * Mendeteksi instalasi ZZZ otomatis via Windows Registry, Active Process, dan File Cache.
+1. **Auto-Extraction Pipeline (PowerShell Universal 1-Liner):**
+   * Pengguna cukup menjalankan perintah 1-baris di PowerShell tanpa perlu clone repo:
+     ```powershell
+     irm https://raw.githubusercontent.com/tehgeii/zzz-gacha-mining/main/extract_signal_url.ps1 | iex
+     ```
+   * Mendeteksi instalasi ZZZ otomatis via Windows Registry, Active Process, dan File Cache `data_2`.
    * Menghindari *file-lock* saat game sedang berjalan.
-   * Auto-detection status authkey (notifikasi ramah jika expired).
+   * Auto-detection status authkey (notifikasi ramah jika expired) dan otomatis tersalin ke Clipboard.
 
 2. **Simulasi Monte Carlo Real-Time (10.000 Percobaan Langsung):**
    * Menjalankan 10.000 simulasi acak langsung di latar belakang setiap kali slider pity atau toggle garansi digeser.

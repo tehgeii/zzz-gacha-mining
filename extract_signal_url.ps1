@@ -70,7 +70,7 @@ $valid_dirs = $candidate_dirs | Where-Object { $_ -and (Test-Path $_) } | Select
 if ($valid_dirs.Count -eq 0) {
     Write-Host "[!] Gagal menemukan folder instalasi Zenless Zone Zero secara otomatis." -ForegroundColor Red
     Write-Host "    Pastikan game ZZZ sudah pernah diinstall di komputer ini." -ForegroundColor Yellow
-    exit 1
+    return
 }
 
 # Cari file data_2 pada semua versi webCaches
@@ -88,7 +88,7 @@ foreach ($dir in $valid_dirs) {
 if ($cache_files.Count -eq 0) {
     Write-Host "[!] File cache gacha (data_2) belum ditemukan." -ForegroundColor Red
     Write-Host "    Silakan buka game ZZZ, masuk ke menu Signal Search (Gacha), dan buka halaman 'History'." -ForegroundColor Yellow
-    exit 1
+    return
 }
 
 # Urutkan berdasarkan waktu modifikasi terbaru
